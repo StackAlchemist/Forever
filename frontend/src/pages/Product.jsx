@@ -2,10 +2,11 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import { ShopContext } from "../Context/ShopContext";
 import { assets } from "../assets/assets";
+import RelatedProducts from "../components/RelatedProducts";
 
 const Product = () => {
   const {productId} = useParams();
-  const {products, currency} = useContext(ShopContext)
+  const {products, currency, addToCart} = useContext(ShopContext)
   const [productData, setProductData] = useState(false)
   const [image, setImage] = useState('')
   const [itemSize, setItemSize] = useState('')
@@ -15,7 +16,7 @@ const Product = () => {
       if(item._id === productId){
         setProductData(item)
         setImage(item.image[0])
-        console.log(item)
+        // console.log(item)
         return null
       }
     })
@@ -70,7 +71,7 @@ const Product = () => {
             </div>
           </div>
 
-          <button className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700">Add To Cart</button>
+          <button onClick={()=>addToCart(productData._id, itemSize )} className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700">Add To Cart</button>
           <hr className="mt-8 sm:w-45"/>
 
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
@@ -93,8 +94,11 @@ const Product = () => {
               <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Corporis possimus explicabo dolorem ullam porro reprehenderit similique quibusdam minima non reiciendis.</p>
               <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore obcaecati voluptates rem aut aspernatur debitis natus dolor, omnis, id officiis dignissimos vel expedita laborum excepturi iure ad doloremque, nemo atque deleniti minima quis vitae. Id explicabo, illum cum repudiandae sunt vitae commodi, quod error quae distinctio laboriosam tempora accusantium quisquam.</p>
             </div>
-        
       </div>
+
+              {/* display related products */}
+      <RelatedProducts category={productData.category} subCategory={productData.subCategory}/>
+
     </div>
   ) : (
     <div className="opacity-0 "></div>
