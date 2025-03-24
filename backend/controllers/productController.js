@@ -1,20 +1,42 @@
-
+import {v2 as  cloudinary} from 'cloudinary'
+import productModel from '../models/productModel.js'
 
 
 //function for add product
 const addProduct = async (req, res)=>{
     try{
-        const {name, description, price, category, subCategory, sizes, bestSeller} = req.body
+        const {name, description, price, category, subCategory, sizes, bestseller} = req.body
 
-        const image1 = req.file.image1[0]
-        const image2 = req.file.image2[0]
-        const image3 = req.file.image3[0]
-        const image4 = req.file.image4[0]
+        const image1 = req.files.image1 && req.files.image1[0]
+        const image2 = req.files.image2 && req.files.image2[0]
+        const image3 = req.files.image3 && req.files.image3[0]
+        const image4 = req.files.image4 && req.files.image4[0]
 
-        console.log(name, description, price, category, subCategory, sizes, bestSeller)
-        console.log(image1, image2, image3, image4)
+        const images = [image1, image2, image3, image4].filter((item)=>item !== undefined)
+        
+        let imagesUrl = await Promise.all(
+            images.map(async (item)=>{
+                let result = await cloudinary.uploader.upload(item.path, {resource_type: 'image'})
+                return result.secure_url
+            })
+        )
 
-        res.status(201).json({})
+        const newProduct = await productModel.create({
+            name,
+            description,
+            price: Number(price),
+            category,
+            subCategory,
+            sizes: JSON.parse(sizes), //converting from string to array
+            bestseller: bestseller === 'true' ? true : false,
+            image: imagesUrl,
+            date: Date.now()
+        })
+
+        console.log(newProduct)
+        await newProduct.save()
+
+        res.status(201).json({success: true, message: "Product added", product: newProduct})
     }catch(error){
         console.log(error)
         res.status(500).json({success: false, message: error.message})
@@ -25,12 +47,14 @@ const addProduct = async (req, res)=>{
 //function for list of product
 const listProduct = async (req, res)=>{
 
+    
+
 }
 
 //function for removing of product
 const removeProduct = async (req, res)=>{
 
-}
+}   
 
 //function for single product info
 const singleProduct = async (req, res)=>{
