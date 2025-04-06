@@ -7,4 +7,5 @@ export default defineConfig({
     react(),
     tailwindcss() // ✅ No arguments needed
   ],
+  server: {port:5173}
 });
