@@ -3,7 +3,9 @@ import productModel from '../models/productModel.js'
 
 
 //function for add product
-const addProduct = async (req, res)=>{
+const addProduct = async (req, res) => {
+    console.log('Add product request received');
+    console.log("FILES:", req.files);
     try{
         const {name, description, price, category, subCategory, sizes, bestseller} = req.body
 
@@ -12,7 +14,10 @@ const addProduct = async (req, res)=>{
         const image3 = req.files.image3 && req.files.image3[0]
         const image4 = req.files.image4 && req.files.image4[0]
 
+       
+
         const images = [image1, image2, image3, image4].filter((item)=>item !== undefined)
+        
         
         let imagesUrl = await Promise.all(
             images.map(async (item)=>{
@@ -20,23 +25,24 @@ const addProduct = async (req, res)=>{
                 return result.secure_url
             })
         )
+        console.log(name, description, price, category, subCategory, sizes, bestseller)
+        console.log(images)
 
-        const newProduct = await productModel.create({
+        const productData = {
             name,
             description,
-            price: Number(price),
             category,
+            price: Number(price),
             subCategory,
-            sizes: JSON.parse(sizes), //converting from string to array
             bestseller: bestseller === 'true' ? true : false,
+            sizes: JSON.parse(sizes), //converting from string to array
             image: imagesUrl,
             date: Date.now()
-        })
+        }
+        const product = new productModel(productData)
+        await product.save()
 
-        console.log(newProduct)
-        await newProduct.save()
-
-        res.status(201).json({success: true, message: "Product added", product: newProduct})
+        res.status(201).json({success: true, message: "Product added", product})
     }catch(error){
         console.log(error)
         res.status(500).json({success: false, message: error.message})
