@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { ShopContext } from '../Context/ShopContext';
+import { ShopContext } from '../context/ShopContext'; // Fixed casing in import path
 import Title from './Title';
 import ProductItem from './ProductItem';
 
@@ -14,7 +14,7 @@ const BestSeller = () => {
       const bestProduct = products.filter((product) => product.bestseller);
       setBestSeller(bestProduct.slice(0, 5));
     }
-  }, []);
+  }, [products]);
 
   return (
     <div className="my-10">
