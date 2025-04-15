@@ -24,7 +24,7 @@ const loginUser = async (req, res)=>{
             const token = createToken(user._id)
             res.status(200).json({success: true, token})
         }else{
-            res.status(400).json({success: false, message: 'Invalid credential'})
+            res.json({success: false, message: 'Invalid credential'})
         }
     } catch (error) {
         console.error(error)
