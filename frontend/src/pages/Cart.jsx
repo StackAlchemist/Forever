@@ -23,6 +23,8 @@ const Cart = () => {
             size: item,
             quantity: cartItems[items][item],
           });
+
+          console.log(tempData)
         }
       }
     }

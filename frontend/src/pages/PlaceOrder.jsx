@@ -3,12 +3,14 @@ import { assets } from "../assets/assets"
 import CartTotal from "../components/CartTotal"
 import Title from "../components/Title"
 import { ShopContext } from "../context/ShopContext"
+import axios from "axios"
+import { toast } from "react-toastify"
 
 const PlaceOrder = () => {
 
   const [method, setMethod] = useState('cod')
 
-  const {navigate} = useContext(ShopContext)
+  const {navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, products} = useContext(ShopContext)
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -33,11 +35,56 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (event)=>{
     event.preventDefault()
+    try {
+      let orderItems = []
+      for(const items in cartItems){
+        for(const item in cartItems[items]){
+          if(cartItems[items][item]>0){
+            const itemInfo = structuredClone(
+              products.find((product) => product._id === items)
+            );
+            if(itemInfo){
+              itemInfo.size = item
+              itemInfo.quantity = cartItems[items][item]
+              orderItems.push(itemInfo)
+            }
+          }
+        }
+      } 
+
+      let orderData = {
+        address: formData,
+        items: orderItems,
+        amount: getCartAmount() + delivery_fee
+      }
+      console.log(orderData)
+
+      switch (method) {
+
+        //api call for COD
+        case 'cod': {
+          const response = await axios.post(backendUrl+'/api/order/place', orderData, {headers:{token}})
+          console.log(response.data);
+          if (response.data.success) {
+            setCartItems({})
+            navigate("/orders")
+          } else {
+            toast.error(response.data.message)
+          }
+          break
+        }
+        default: 
+          break;
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
   }
   
 
   return (
-    <form className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t">
+    <form onSubmit={onSubmitHandler} className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t">
 
       {/* left side */}
 
@@ -87,7 +134,7 @@ const PlaceOrder = () => {
             </div>
 
             <div className="w-full text-end mt-8">
-              <button type="submit" onClick={()=>navigate('/orders')} className="bg-black text-white px-16 py-3 text-sm">PLACE ORDER</button>
+              <button type="submit" className="bg-black text-white px-16 py-3 text-sm">PLACE ORDER</button>
             </div>
           </div>
         </div>
