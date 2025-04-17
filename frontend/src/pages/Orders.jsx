@@ -27,7 +27,7 @@ const Orders = () => {
             allOrdersItem.push(item)
           })
         })
-        setOrderData(allOrdersItem)
+        setOrderData(allOrdersItem.reverse())
         console.log(allOrdersItem)
       }
     } catch (error) {
