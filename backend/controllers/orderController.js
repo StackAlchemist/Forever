@@ -104,10 +104,10 @@ const verifyStripe = async (req, res)=>{
   }
 }
 
-const placeOrderRazorPay= async(req, res)=>{
+// const placeOrderRazorPay= async(req, res)=>{
 
     
-}
+// }
 
 //ALL ORDERS DATA FOR ADMIN PANEL
 const allOrders= async(req, res)=>{
@@ -148,4 +148,4 @@ const updateStatus= async(req, res)=>{
 
 }
 
-export {placeOrder, placeOrderStripe, placeOrderRazorPay, allOrders, userOrders, updateStatus, verifyStripe}
+export {placeOrder, placeOrderStripe, allOrders, userOrders, updateStatus, verifyStripe}
